@@ -16,7 +16,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "로또 카드 게임",
   description: "행운의 카드를 선택하여 당첨 기회를 잡으세요!",
-  keywords: "로또, 카드 게임, 운, 당첨, 온라인 게임",
+  keywords: "로또, 카드 게임, 운, 당첨, 온라인 게임, 개인 프로젝트",
   openGraph: {
     title: "로또 카드 게임",
     description: "행운의 카드를 선택하여 당첨 기회를 잡으세요!",
