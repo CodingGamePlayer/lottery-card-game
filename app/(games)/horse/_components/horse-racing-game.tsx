@@ -107,11 +107,11 @@ export function HorseRacingGameComponent({
   );
 
   const renderGameTrack = () => (
-    <div className="w-full">
+    <div className="w-full overflow-y-auto overflow-x-hidden" style={{ maxHeight: "70vh" }}>
       <div
         className="border-t-4 border-b-4 border-gray-400 relative mx-auto"
         style={{
-          height: `${Math.min(horses.length * laneHeight + nameOffset, window.innerHeight * 0.7)}px`,
+          height: `${horses.length * laneHeight + nameOffset}px`,
           width: `${trackWidth}px`,
         }}
       >
@@ -155,7 +155,7 @@ export function HorseRacingGameComponent({
   return (
     <>
       {renderGameControls()}
-      <div className="flex flex-col items-start w-full max-w-4xl">
+      <div className="flex flex-col items-start w-full">
         {renderGameTrack()}
         {renderResults()}
       </div>
