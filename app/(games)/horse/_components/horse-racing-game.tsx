@@ -25,6 +25,7 @@ export function HorseRacingGameComponent({
   const [finishedHorses, setFinishedHorses] = useState<Horse[]>([]);
   const [trackWidth, setTrackWidth] = useState(0);
   const [trackHeight, setTrackHeight] = useState(0);
+  const [raceFinished, setRaceFinished] = useState(false);
 
   const minHorseWidth = 20;
   const maxHorseWidth = 40;
@@ -88,6 +89,7 @@ export function HorseRacingGameComponent({
 
           if (newHorses.every((horse) => horse.position >= trackWidth)) {
             setIsRacing(false);
+            setRaceFinished(true);
             clearInterval(interval);
           }
 
@@ -102,19 +104,29 @@ export function HorseRacingGameComponent({
   const handleStartRace = () => {
     setIsRacing(true);
     setFinishedHorses([]);
+    setRaceFinished(false);
+    setHorses(horses.map((horse) => ({ ...horse, position: 0, speed: Math.random() * 1.5 + 0.5, finishTime: undefined })));
   };
 
   const handleNewGame = () => {
     setIsRacing(false);
+    setRaceFinished(false);
     onNewGame();
   };
 
   const renderGameControls = () => (
     <div className="flex flex-col items-center mb-4">
       <h1 className="text-2xl font-bold mb-4 text-center">경마 게임</h1>
-      <Button onClick={isRacing ? handleNewGame : handleStartRace} disabled={isRacing}>
-        {isRacing ? "새 게임" : "경주 시작"}
-      </Button>
+      {raceFinished ? (
+        <div className="flex gap-4">
+          <Button onClick={handleStartRace}>다시 경주</Button>
+          <Button onClick={handleNewGame}>새 게임</Button>
+        </div>
+      ) : (
+        <Button onClick={handleStartRace} disabled={isRacing}>
+          {isRacing ? "경주 중..." : "경주 시작"}
+        </Button>
+      )}
     </div>
   );
 
