@@ -24,21 +24,33 @@ export function HorseRacingGameComponent({
   const [isRacing, setIsRacing] = useState(false);
   const [finishedHorses, setFinishedHorses] = useState<Horse[]>([]);
   const [trackWidth, setTrackWidth] = useState(0);
+  const [trackHeight, setTrackHeight] = useState(0);
 
-  const horseWidth = 40;
-  const laneHeight = 60;
+  const minHorseWidth = 20;
+  const maxHorseWidth = 40;
+  const minLaneHeight = 30;
+  const maxLaneHeight = 60;
   const nameOffset = 24;
 
   useEffect(() => {
     const handleResize = () => {
       const newWidth = window.innerWidth - 32; // 32px for padding
+      const newHeight = window.innerHeight * 0.8; // 80% of viewport height
       setTrackWidth(newWidth);
+      setTrackHeight(newHeight);
     };
 
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const calculateHorseSize = () => {
+    const availableHeight = trackHeight - nameOffset;
+    const laneHeight = Math.max(minLaneHeight, Math.min(maxLaneHeight, availableHeight / horses.length));
+    const horseWidth = Math.max(minHorseWidth, Math.min(maxHorseWidth, laneHeight * 0.8));
+    return { laneHeight, horseWidth };
+  };
 
   useEffect(() => {
     if (isRacing) {
@@ -106,39 +118,42 @@ export function HorseRacingGameComponent({
     </div>
   );
 
-  const renderGameTrack = () => (
-    <div className="w-full overflow-y-auto overflow-x-hidden" style={{ maxHeight: "70vh" }}>
-      <div
-        className="border-t-4 border-b-4 border-gray-400 relative mx-auto"
-        style={{
-          height: `${horses.length * laneHeight + nameOffset}px`,
-          width: `${trackWidth}px`,
-        }}
-      >
-        {horses.map((horse, index) => (
-          <div
-            key={horse.id}
-            className="absolute transition-all duration-100 ease-linear"
-            style={{
-              left: `${(horse.position / trackWidth) * (trackWidth - horseWidth)}px`,
-              top: `${index * laneHeight + nameOffset}px`,
-              width: `${horseWidth}px`,
-              height: "40px",
-            }}
-          >
-            <svg viewBox="0 0 100 100" width="40" height="40">
-              <path
-                d="M70 5 L80 15 L75 25 L60 25 Q65 15 70 5 M25 40 Q40 35 50 40 Q60 45 75 40 L75 70 L25 70 L25 40 M25 70 L25 90 L35 90 L35 70 M65 70 L65 90 L75 90 L75 70"
-                fill={horse.color}
-              />
-            </svg>
-            <span className="absolute left-0 -top-6 text-sm font-bold whitespace-nowrap">{horse.name}</span>
-          </div>
-        ))}
-        <div className="absolute top-0 bottom-0 border-l-2 border-red-500" style={{ right: "0" }}></div>
+  const renderGameTrack = () => {
+    const { laneHeight, horseWidth } = calculateHorseSize();
+    return (
+      <div className="w-full overflow-hidden" style={{ height: `${trackHeight}px` }}>
+        <div
+          className="border-t-4 border-b-4 border-gray-400 relative mx-auto"
+          style={{
+            height: `${trackHeight}px`,
+            width: `${trackWidth}px`,
+          }}
+        >
+          {horses.map((horse, index) => (
+            <div
+              key={horse.id}
+              className="absolute transition-all duration-100 ease-linear"
+              style={{
+                left: `${(horse.position / trackWidth) * (trackWidth - horseWidth)}px`,
+                top: `${index * laneHeight + nameOffset}px`,
+                width: `${horseWidth}px`,
+                height: `${horseWidth}px`,
+              }}
+            >
+              <svg viewBox="0 0 100 100" width={horseWidth} height={horseWidth}>
+                <path
+                  d="M70 5 L80 15 L75 25 L60 25 Q65 15 70 5 M25 40 Q40 35 50 40 Q60 45 75 40 L75 70 L25 70 L25 40 M25 70 L25 90 L35 90 L35 70 M65 70 L65 90 L75 90 L75 70"
+                  fill={horse.color}
+                />
+              </svg>
+              <span className="absolute left-0 -top-6 text-sm font-bold whitespace-nowrap">{horse.name}</span>
+            </div>
+          ))}
+          <div className="absolute top-0 bottom-0 border-l-2 border-red-500" style={{ right: "0" }}></div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderResults = () =>
     finishedHorses.length > 0 && (
