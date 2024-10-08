@@ -63,13 +63,16 @@ export function LotteryCards() {
 
   const handleCardClick = (id: number) => {
     setCards(
-      cards.map(
-        (card) => (card.id === id ? { ...card, isRevealed: true } : card) // 클릭한 카드만 앞면으로 변경
-      )
+      cards.map((card) => {
+        if (card.id === id && !card.isRevealed) {
+          if (card.isWinner) {
+            setRevealedWinners((prev) => prev + 1);
+          }
+          return { ...card, isRevealed: true };
+        }
+        return card;
+      })
     );
-    if (cards[id].isWinner) {
-      setRevealedWinners((prev) => prev + 1);
-    }
   };
 
   useEffect(() => {
